@@ -40,6 +40,7 @@ const updateElevatorStatus = (elevatorNumber: number) => {
   elevatorsStates[elevatorNumber].inWork = false;
   elevatorsStates[elevatorNumber].currFloorBeforeStart = elevatorsStates[elevatorNumber].target;
   console.log('work done');
+  elevatorScheduler();
 }
 
 const elevatorScheduler = () => {
