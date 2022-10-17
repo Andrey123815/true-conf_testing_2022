@@ -1,7 +1,7 @@
 <template>
   <div class="floor">
     <span class="floor__number">{{floorNumber}}</span>
-    <button>Call the elevator</button>
+    <button @click="emit('call-elevator', floorNumber)">Call the elevator</button>
   </div>
 </template>
 
@@ -9,6 +9,10 @@
 interface Props {
   floorNumber: number
 }
+
+const emit = defineEmits<{
+  (e: 'call-elevator', floor: number): void
+}>();
 
 const {floorNumber} = defineProps<Props>();
 </script>

@@ -1,4 +1,6 @@
 <template>
+<!--  <span>{{elevatorNumber}}</span>-->
+<!--  <span>{{state}}</span>-->
   <div class="elevator">
     <div class="elevator__shaft">
       <div class="elevator__cabin">
@@ -24,8 +26,78 @@
 <script setup lang="ts">
 import IconArrowUp from "@/components/icons/IconArrowUp.vue";
 import IconArrowDown from "@/components/icons/IconArrowDown.vue";
+import {onBeforeMount, onBeforeUnmount, onUpdated, ref, toRefs} from "vue";
+import type {IElevatorState} from "@/configurations/elevator";
 
-// const shaftHeight = 202 * 5;
+type TElevatorState = 'FREE' | 'WORK' | 'OPEN';
+
+const FREE_STATE: TElevatorState = 'FREE';
+const WORK_STATE: TElevatorState = 'WORK';
+const DOOR_OPEN_STATE: TElevatorState = 'OPEN';
+
+interface Props {
+  elevatorNumber: number,
+  state: IElevatorState,
+}
+
+const emit = defineEmits<{
+  (e: 'free-elevator'): void
+}>();
+
+
+const animation = () => {
+  const floorDiff = state.value.target - state.value.currFloorBeforeStart;
+
+  console.log("START ANIMATION");
+
+  currentFloor.value = state.value.target;
+
+  setTimeout(() => {
+    elevatorState.value = DOOR_OPEN_STATE;
+
+    console.log("closing")
+
+    setTimeout(() => {
+      elevatorState.value = FREE_STATE;
+      console.log(elevatorState.value)
+      emit('free-elevator');
+    }, 3000);
+  }, Math.abs(floorDiff) * 1000);
+}
+
+
+const elevatorState = ref<TElevatorState>(WORK_STATE);
+
+
+const props = defineProps<Props>();
+const {elevatorNumber, state} = toRefs(props);
+// const state = props.state;
+// const elevatorNumber = props.elevatorNumber;
+
+// const floorDiff = ref<number>(Math.abs(state.value.currFloorBeforeStart - state.value.target));
+
+const currentFloor = ref<number>(state.value.currFloorBeforeStart);
+
+// setTimeout(() => {
+//   elevatorState.value = DOOR_OPEN_STATE;
+//   setTimeout(() => {
+//     elevatorState.value = FREE_STATE;
+//     emit('free-elevator');
+//   }, 3000);
+// }, floorDiff * 1000);
+
+onUpdated(animation);
+
+onBeforeUnmount(() => {
+  localStorage.setItem('elevator' + elevatorNumber, `${currentFloor.value}`);
+});
+
+onBeforeMount(() => {
+  const savedFloorPosition: number = +localStorage.getItem('elevator' + elevatorNumber);
+  if (savedFloorPosition) {
+    currentFloor.value = savedFloorPosition;
+  }
+});
 </script>
 
 <style scoped lang="scss">
@@ -54,11 +126,12 @@ import IconArrowDown from "@/components/icons/IconArrowDown.vue";
   &__floor-panel {
     display: inline-block;
     border-radius: 5px;
-    background: white;
+    background: #065F46;
   }
 
   &__door-status {
     color: green;
+    font-size: 20px;
   }
 }
 
@@ -69,6 +142,7 @@ import IconArrowDown from "@/components/icons/IconArrowDown.vue";
 
   &__target-floor {
     font-size: 18px;
+    color: white;
   }
 }
 </style>
