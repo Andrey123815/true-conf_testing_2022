@@ -45,8 +45,11 @@ const updateElevatorStatus = (elevatorNumber: number) => {
 
 const elevatorScheduler = () => {
   console.log("START SCHEDULER")
-  elevatorsStates.forEach((state, index) => {
-    if (!state.inWork && elevatorCallQueue.getLength()) {
+  for (let index = 0; index < elevatorsStates.length; ++index) {
+    if (!elevatorCallQueue.getLength()) {
+      break;
+    }
+    if (!elevatorsStates[index].inWork) {
       console.log(elevatorsStates[index]);
       console.log("set task to elevator");
       elevatorsStates.splice(index, 1,
@@ -56,7 +59,7 @@ const elevatorScheduler = () => {
           currFloorBeforeStart: elevatorsStates[index].currFloorBeforeStart
         } as IElevatorState);
     }
-  })
+  }
 }
 
 const elevatorCallQueue: Queue = reactive(new Queue());

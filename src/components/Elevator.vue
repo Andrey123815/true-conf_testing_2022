@@ -4,8 +4,8 @@
       <div class="elevator__cabin" :style="animationStyles">
         <div class="cabin__floor-panel">
           <div class="floor-panel__move-directions">
-            <IconArrowUp :active="false"/>
-            <IconArrowDown :active="true"/>
+            <IconArrowUp :active="state.target - state.currFloorBeforeStart > 0"/>
+            <IconArrowDown :active="state.target - state.currFloorBeforeStart < 0"/>
           </div>
           <span class="floor-panel__target-floor">01</span>
         </div>
