@@ -45,11 +45,9 @@ const animation = (animationStyles) => {
 
   console.log(floorDiff);
 
-  generateAnimation(animationStyles, floorDiff);
+  generateAnimation(animationStyles, floorDiff, currentFloor.value);
 
   console.log("START ANIMATION");
-
-  currentFloor.value = state.value.target;
 
   setTimeout(() => {
     elevatorState.value = DOOR_OPEN_STATE;
@@ -57,6 +55,9 @@ const animation = (animationStyles) => {
     Object.keys(animationStyles).forEach(style => animationStyles[style] = defaultAnimationStyle[style]);
 
     console.log("closing")
+
+    console.log(animationStyles)
+    currentFloor.value = state.value.target;
 
     setTimeout(() => {
       elevatorState.value = FREE_STATE;
@@ -67,44 +68,33 @@ const animation = (animationStyles) => {
 }
 
 
-const elevatorState = ref<TElevatorState>(WORK_STATE);
-
-
 const props = defineProps<Props>();
+
 const {elevatorNumber, state} = toRefs(props);
-// const state = props.state;
-// const elevatorNumber = props.elevatorNumber;
-
-// const floorDiff = ref<number>(Math.abs(state.value.currFloorBeforeStart - state.value.target));
-
+const elevatorState = ref<TElevatorState>(WORK_STATE);
 const currentFloor = ref<number>(state.value.currFloorBeforeStart);
 const animationStyles = reactive<IAnimationStyle>(defaultAnimationStyle);
 
-// setTimeout(() => {
-//   elevatorState.value = DOOR_OPEN_STATE;
-//   setTimeout(() => {
-//     elevatorState.value = FREE_STATE;
-//     emit('free-elevator');
-//   }, 3000);
-// }, floorDiff * 1000);
-
 onUpdated(()=> animation(animationStyles));
 
-onBeforeUnmount(() => {
-  localStorage.setItem('elevator' + elevatorNumber, `${currentFloor.value}`);
-});
-
-onBeforeMount(() => {
-  const savedFloorPosition: number = +localStorage.getItem('elevator' + elevatorNumber);
-  if (savedFloorPosition) {
-    currentFloor.value = savedFloorPosition;
-  }
-});
+// onBeforeUnmount(() => {
+//   localStorage.setItem('elevator' + elevatorNumber, `${currentFloor.value}`);
+// });
+//
+// onBeforeMount(() => {
+//   const savedFloorPosition: number = +localStorage.getItem('elevator' + elevatorNumber);
+//   if (savedFloorPosition) {
+//     currentFloor.value = savedFloorPosition;
+//   }
+// });
 </script>
 
 <style scoped lang="scss">
 .elevator {
   &__shaft {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
     width: 152px;
     height: 100%;
     border: 1px solid gray;
