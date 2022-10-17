@@ -60,7 +60,7 @@ const elevatorScheduler = () => {
 
 const elevatorCallQueue: Queue = reactive(new Queue());
 const elevatorsStates: IElevatorState[] = reactive(new Array(elevatorsCount)
-  .fill({target: 0, inWork: false, currFloorBeforeStart: 0} as IElevatorState));
+  .fill({target: 0, inWork: false, currFloorBeforeStart: floorsCount} as IElevatorState));
 
 </script>
 

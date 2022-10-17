@@ -1,9 +1,7 @@
 <template>
-<!--  <span>{{elevatorNumber}}</span>-->
-<!--  <span>{{state}}</span>-->
   <div class="elevator">
     <div class="elevator__shaft">
-      <div class="elevator__cabin">
+      <div class="elevator__cabin" :style="animationStyles">
         <div class="cabin__floor-panel">
           <div class="floor-panel__move-directions">
             <IconArrowUp :active="false"/>
@@ -26,14 +24,11 @@
 <script setup lang="ts">
 import IconArrowUp from "@/components/icons/IconArrowUp.vue";
 import IconArrowDown from "@/components/icons/IconArrowDown.vue";
-import {onBeforeMount, onBeforeUnmount, onUpdated, ref, toRefs} from "vue";
-import type {IElevatorState} from "@/configurations/elevator";
-
-type TElevatorState = 'FREE' | 'WORK' | 'OPEN';
-
-const FREE_STATE: TElevatorState = 'FREE';
-const WORK_STATE: TElevatorState = 'WORK';
-const DOOR_OPEN_STATE: TElevatorState = 'OPEN';
+import {onBeforeMount, onBeforeUnmount, onUpdated, reactive, ref, toRefs} from "vue";
+import type {IElevatorState, TElevatorState} from "@/configurations/elevator";
+import {DOOR_OPEN_STATE, FREE_STATE, WORK_STATE} from "@/configurations/elevator";
+import type {IAnimationStyle} from "@/configurations/animationStyles";
+import {defaultAnimationStyle, generateAnimation} from "@/configurations/animationStyles";
 
 interface Props {
   elevatorNumber: number,
@@ -45,8 +40,12 @@ const emit = defineEmits<{
 }>();
 
 
-const animation = () => {
+const animation = (animationStyles) => {
   const floorDiff = state.value.target - state.value.currFloorBeforeStart;
+
+  console.log(floorDiff);
+
+  generateAnimation(animationStyles, floorDiff);
 
   console.log("START ANIMATION");
 
@@ -54,6 +53,8 @@ const animation = () => {
 
   setTimeout(() => {
     elevatorState.value = DOOR_OPEN_STATE;
+
+    Object.keys(animationStyles).forEach(style => animationStyles[style] = defaultAnimationStyle[style]);
 
     console.log("closing")
 
@@ -77,6 +78,7 @@ const {elevatorNumber, state} = toRefs(props);
 // const floorDiff = ref<number>(Math.abs(state.value.currFloorBeforeStart - state.value.target));
 
 const currentFloor = ref<number>(state.value.currFloorBeforeStart);
+const animationStyles = reactive<IAnimationStyle>(defaultAnimationStyle);
 
 // setTimeout(() => {
 //   elevatorState.value = DOOR_OPEN_STATE;
@@ -86,7 +88,7 @@ const currentFloor = ref<number>(state.value.currFloorBeforeStart);
 //   }, 3000);
 // }, floorDiff * 1000);
 
-onUpdated(animation);
+onUpdated(()=> animation(animationStyles));
 
 onBeforeUnmount(() => {
   localStorage.setItem('elevator' + elevatorNumber, `${currentFloor.value}`);
