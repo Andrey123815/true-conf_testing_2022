@@ -16,7 +16,6 @@ const floorHeight: number = 201;
 const elevatorSpeed: number = 1;
 
 export const generateAnimation = (animationStyle: IAnimationStyle, floorsDiff: number, currentFloor: number) => {
-  console.log("currentFloor: ", currentFloor, "floorsDiff: ", floorsDiff);
   animationStyle.transform = `translate(0px,${-(floorsDiff + currentFloor) * (floorHeight)}px)`;
   animationStyle.transitionDuration = `${Math.abs(floorsDiff) / elevatorSpeed}s`;
   animationStyle.transitionTimingFunction = "ease-out";

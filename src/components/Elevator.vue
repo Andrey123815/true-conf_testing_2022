@@ -30,6 +30,8 @@ import {DOOR_OPEN_STATE, FREE_STATE, WORK_STATE} from "@/configurations/elevator
 import type {IAnimationStyle} from "@/configurations/animationStyles";
 import {defaultAnimationStyle, generateAnimation} from "@/configurations/animationStyles";
 
+const EMPTY_TIMER: number = -1;
+
 interface Props {
   elevatorNumber: number,
   state: IElevatorState,
@@ -41,28 +43,35 @@ const emit = defineEmits<{
 
 
 const animation = (animationStyles) => {
-  const floorDiff = state.value.target - state.value.currFloorBeforeStart;
+  // if (timerID.value === -11) {
+  //   timerID.value = -1;
+  //   return;
+  // }
+  if (timerID.value !== -1) {
+    return;
+  }
 
-  console.log(floorDiff);
+  const floorDiff = state.value.target - state.value.currFloorBeforeStart;
 
   generateAnimation(animationStyles, floorDiff, currentFloor.value);
 
-  console.log("START ANIMATION");
+  console.log("START ANIMATION", timerID.value);
 
-  setTimeout(() => {
+  timerID.value = setTimeout(() => {
     elevatorState.value = DOOR_OPEN_STATE;
 
     Object.keys(animationStyles).forEach(style => animationStyles[style] = defaultAnimationStyle[style]);
 
-    console.log("closing")
+    // console.log("closing")
 
-    console.log(animationStyles)
     currentFloor.value = state.value.target;
 
     setTimeout(() => {
       elevatorState.value = FREE_STATE;
-      console.log(elevatorState.value)
+      console.log("EMIIIT")
       emit('free-elevator');
+      clearTimeout(timerID.value);
+      timerID.value = EMPTY_TIMER;
     }, 3000);
   }, Math.abs(floorDiff) * 1000);
 }
@@ -74,8 +83,9 @@ const {elevatorNumber, state} = toRefs(props);
 const elevatorState = ref<TElevatorState>(WORK_STATE);
 const currentFloor = ref<number>(state.value.currFloorBeforeStart);
 const animationStyles = reactive<IAnimationStyle>(defaultAnimationStyle);
+const timerID = ref<number>(EMPTY_TIMER);
 
-onUpdated(()=> animation(animationStyles));
+onUpdated(() => animation(animationStyles));
 
 // onBeforeUnmount(() => {
 //   localStorage.setItem('elevator' + elevatorNumber, `${currentFloor.value}`);

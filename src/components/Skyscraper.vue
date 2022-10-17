@@ -31,7 +31,7 @@ const floors = [...Array(floorsCount).keys()];
 
 
 const callElevator = (floor: number) => {
-  console.log("call elevator");
+  // console.log("call elevator");
   elevatorCallQueue.enqueue(floor);
   elevatorScheduler();
 }
@@ -50,7 +50,6 @@ const elevatorScheduler = () => {
       break;
     }
     if (!elevatorsStates[index].inWork) {
-      console.log(elevatorsStates[index]);
       console.log("set task to elevator");
       elevatorsStates.splice(index, 1,
         {
