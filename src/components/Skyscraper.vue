@@ -26,15 +26,13 @@ import {reactive} from "vue";
 import type {IElevatorStatus, IFloor} from "@/configurations/elevator";
 
 const floorsCount = 4;
-const elevatorsCount = 1;
+const elevatorsCount = 2;
 const elevators = [...Array(elevatorsCount).keys()];
 const floors = [...Array(floorsCount).keys()];
 
 
 const callElevator = (floor: number) => {
-  // console.log("call elevator");
   elevatorCallQueue.enqueue(floor);
-  // console.log(elevatorCallQueue)
   elevatorScheduler();
 }
 
@@ -55,20 +53,12 @@ const elevatorScheduler = () => {
     console.log("ggoone")
     if (!elevatorsStatuses[index].inWork) {
       console.log("set task to elevator");
-      // for (let ind of Object.keys(elevatorCallQueue)) {
-      //   if (!elevatorsCalls.includes(ind as IFloorCall)) {
-      //     elevatorsCalls[index] = ind as IFloorCall;
-      //     break;
-      //   }
-      // }
       for (let floorCall of elevatorCallQueue.qu) {
         if (!elevatorsCalls.includes(floorCall as IFloor)) {
           elevatorsCalls[index] = floorCall as IFloor;
           break;
         }
       }
-      // elevatorsCalls[index] =
-      // elevatorsCalls[index].target = elevatorCallQueue.dequeue() as number;
       elevatorsStatuses[index].inWork = true;
     }
   }

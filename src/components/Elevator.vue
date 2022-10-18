@@ -45,16 +45,11 @@ const emit = defineEmits<{
 
 
 const animation = (animationStyles) => {
-  // if (timerID.value === -11) {
-  //   timerID.value = EMPTY_TIMER;
-  //   return;
-  // }
   if (timerID.value !== EMPTY_TIMER) {
     return;
   }
 
   const floorDiff = targetFloor.value - currentFloor.value;
-  // console.log(targetFloor.value.target, currentFloor.value)
 
   generateAnimation(animationStyles, floorDiff, currentFloor.value);
 
@@ -62,10 +57,6 @@ const animation = (animationStyles) => {
 
   timerID.value = setTimeout(() => {
     elevatorState.value = DOOR_OPEN_STATE;
-
-    // Object.keys(animationStyles).forEach(style => animationStyles[style] = defaultAnimationStyle[style]);
-
-    // console.log("closing")
 
     currentFloor.value = targetFloor.value;
 
