@@ -6,8 +6,8 @@
       <Elevator v-for="elevatorNumber in elevators"
                 :key="elevatorNumber"
                 :elevatorNumber="elevatorNumber"
-                :call="elevatorsCalls[elevatorNumber]"
-                @free-elevator="updateElevatorStatus(elevatorNumber)"/>
+                :targetFloor="elevatorsCalls[elevatorNumber]"
+                @free-elevator="updateElevatorStatus(elevatorNumber, elevatorsCalls[elevatorNumber])"/>
     </section>
     <section class="skyscraper__floors">
       <Floor v-for="floor in floors"
@@ -23,7 +23,7 @@ import Floor from "@/components/Floor.vue";
 import Elevator from "@/components/Elevator.vue";
 import Queue from "../libraries/Queue";
 import {reactive} from "vue";
-import type {IElevatorCall, IElevatorStatus} from "@/configurations/elevator";
+import type {IElevatorStatus, IFloor} from "@/configurations/elevator";
 
 const floorsCount = 4;
 const elevatorsCount = 1;
@@ -38,9 +38,10 @@ const callElevator = (floor: number) => {
   elevatorScheduler();
 }
 
-const updateElevatorStatus = (elevatorNumber: number) => {
+const updateElevatorStatus = (elevatorNumber: number, currentFloor: number) => {
   elevatorsStatuses[elevatorNumber].inWork = false;
   console.log('work done');
+  elevatorCallQueue.qu.delete(currentFloor);
   elevatorScheduler();
 }
 
@@ -54,7 +55,20 @@ const elevatorScheduler = () => {
     console.log("ggoone")
     if (!elevatorsStatuses[index].inWork) {
       console.log("set task to elevator");
-      elevatorsCalls[index].target = elevatorCallQueue.dequeue() as number;
+      // for (let ind of Object.keys(elevatorCallQueue)) {
+      //   if (!elevatorsCalls.includes(ind as IFloorCall)) {
+      //     elevatorsCalls[index] = ind as IFloorCall;
+      //     break;
+      //   }
+      // }
+      for (let floorCall of elevatorCallQueue.qu) {
+        if (!elevatorsCalls.includes(floorCall as IFloor)) {
+          elevatorsCalls[index] = floorCall as IFloor;
+          break;
+        }
+      }
+      // elevatorsCalls[index] =
+      // elevatorsCalls[index].target = elevatorCallQueue.dequeue() as number;
       elevatorsStatuses[index].inWork = true;
     }
   }
@@ -62,8 +76,10 @@ const elevatorScheduler = () => {
 }
 
 const elevatorCallQueue: Queue = reactive(new Queue());
-const elevatorsCalls: IElevatorCall[] =
-  reactive(new Array(elevatorsCount).fill({target: 0} as IElevatorCall));
+
+const elevatorsCalls: IFloor[] =
+  reactive(new Array(elevatorsCount).fill(0 as IFloor));
+
 const elevatorsStatuses: IElevatorStatus[] =
   reactive(new Array(elevatorsCount).fill({inWork: false} as IElevatorStatus));
 

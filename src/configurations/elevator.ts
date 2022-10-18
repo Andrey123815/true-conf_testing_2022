@@ -1,6 +1,4 @@
-export interface IElevatorCall {
-  target: number,
-}
+export type IFloor = number;
 
 export interface IElevatorStatus {
   inWork: boolean,

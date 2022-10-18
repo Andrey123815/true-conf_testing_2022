@@ -5,9 +5,9 @@
         <div class="cabin__floor-panel">
           <div class="floor-panel__move-directions">
             <IconArrowUp
-              :active="elevatorState !== DOOR_OPEN_STATE && call.target - currentFloor > 0"/>
+              :active="elevatorState !== DOOR_OPEN_STATE && targetFloor - currentFloor > 0"/>
             <IconArrowDown
-              :active="elevatorState !== DOOR_OPEN_STATE && call.target - currentFloor < 0"/>
+              :active="elevatorState !== DOOR_OPEN_STATE && targetFloor - currentFloor < 0"/>
           </div>
           <span class="floor-panel__target-floor">01</span>
         </div>
@@ -16,7 +16,7 @@
         </span>
         <div class="cabin__special-block">
           <button>Emergency</button>
-          <button>Call</button>
+          <button>targetFloor</button>
         </div>
       </div>
     </div>
@@ -27,7 +27,7 @@
 import IconArrowUp from "@/components/icons/IconArrowUp.vue";
 import IconArrowDown from "@/components/icons/IconArrowDown.vue";
 import {onBeforeMount, onBeforeUnmount, onUpdated, reactive, ref, toRefs} from "vue";
-import type {IElevatorCall, TElevatorState} from "@/configurations/elevator";
+import type {IFloor, TElevatorState} from "@/configurations/elevator";
 import {DOOR_OPEN_STATE, FREE_STATE, WORK_STATE} from "@/configurations/elevator";
 import type {IAnimationStyle} from "@/configurations/animationStyles";
 import {defaultAnimationStyle, generateAnimation} from "@/configurations/animationStyles";
@@ -36,11 +36,11 @@ const EMPTY_TIMER: number = -1;
 
 interface Props {
   elevatorNumber: number,
-  call: IElevatorCall,
+  targetFloor: IFloor,
 }
 
 const emit = defineEmits<{
-  (e: 'free-elevator'): void
+  (e: 'free-elevator', elevatorNumber: number, currentFloor: number): void
 }>();
 
 
@@ -53,8 +53,8 @@ const animation = (animationStyles) => {
     return;
   }
 
-  const floorDiff = call.value.target - currentFloor.value;
-  // console.log(call.value.target, currentFloor.value)
+  const floorDiff = targetFloor.value - currentFloor.value;
+  // console.log(targetFloor.value.target, currentFloor.value)
 
   generateAnimation(animationStyles, floorDiff, currentFloor.value);
 
@@ -67,12 +67,12 @@ const animation = (animationStyles) => {
 
     // console.log("closing")
 
-    currentFloor.value = call.value.target;
+    currentFloor.value = targetFloor.value;
 
     setTimeout(() => {
       elevatorState.value = FREE_STATE;
       console.log("EMIIIT")
-      emit('free-elevator');
+      emit('free-elevator', elevatorNumber.value, currentFloor.value);
       clearTimeout(timerID.value);
       timerID.value = EMPTY_TIMER;
     }, 3000);
@@ -82,7 +82,7 @@ const animation = (animationStyles) => {
 
 const props = defineProps<Props>();
 
-const {elevatorNumber, call} = toRefs(props);
+const {elevatorNumber, targetFloor} = toRefs(props);
 const elevatorState = ref<TElevatorState>(WORK_STATE);
 const currentFloor = ref<number>(0);
 const animationStyles = reactive<IAnimationStyle>(defaultAnimationStyle);
