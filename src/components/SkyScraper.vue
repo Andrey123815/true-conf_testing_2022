@@ -41,27 +41,21 @@ const callElevator = (floor: number) => {
 
 const updateElevatorStatus = (elevatorNumber: number, currentFloor: number) => {
   elevatorsStatuses[elevatorNumber].inWork = false;
-  console.log("work done");
   elevatorCallQueue.qu.delete(currentFloor);
   elevatorScheduler();
 };
 
 const elevatorScheduler = () => {
-  console.log("START SCHEDULER");
   const allElevatorsInWork = elevatorsStatuses.reduce(
     (noFreeElevator: boolean, status) => noFreeElevator && status.inWork,
     true
   );
-  console.log("allElevatorsInWork", allElevatorsInWork);
 
   for (let index = 0; index < elevatorsCount; ++index) {
     if (!elevatorCallQueue.getLength() || allElevatorsInWork) {
-      console.log("EMPTY elevatorCallQueue || all in work");
       break;
     }
-    console.log("ggoone");
     if (!elevatorsStatuses[index].inWork) {
-      console.log("set task to elevator");
       for (let floorCall of elevatorCallQueue.qu) {
         if (!elevatorsCalls.includes(floorCall as IFloor)) {
           elevatorsCalls[index] = floorCall as IFloor;
@@ -71,7 +65,6 @@ const elevatorScheduler = () => {
       elevatorsStatuses[index].inWork = true;
     }
   }
-  console.log("TUUUT");
 };
 
 const elevatorCallQueue = reactive(new Queue<number>());

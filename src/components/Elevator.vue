@@ -72,8 +72,6 @@ const animation = (animationStyles: IAnimationStyle) => {
 
   generateAnimation(animationStyles, floorDiff, currentFloor.value);
 
-  console.log("START ANIMATION", timerID.value);
-
   timerID.value = setTimeout(() => {
     elevatorState.value = DOOR_OPEN_STATE;
 
@@ -81,7 +79,6 @@ const animation = (animationStyles: IAnimationStyle) => {
 
     setTimeout(() => {
       elevatorState.value = FREE_STATE;
-      console.log("EMIIIT");
       emit("free-elevator", elevatorNumber.value, currentFloor.value);
       clearTimeout(timerID.value);
       timerID.value = EMPTY_TIMER;
@@ -98,17 +95,6 @@ const animationStyles = reactive<IAnimationStyle>(defaultAnimationStyle);
 const timerID = ref<number>(EMPTY_TIMER);
 
 onUpdated(() => animation(animationStyles));
-
-// onBeforeUnmount(() => {
-//   localStorage.setItem('elevator' + elevatorNumber, `${currentFloor.value}`);
-// });
-//
-// onBeforeMount(() => {
-//   const savedFloorPosition: number = +localStorage.getItem('elevator' + elevatorNumber);
-//   if (savedFloorPosition) {
-//     currentFloor.value = savedFloorPosition;
-//   }
-// });
 </script>
 
 <style scoped lang="scss">
