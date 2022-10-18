@@ -1,19 +1,23 @@
 <template>
-  <span>{{ elevatorCallQueue }}</span>
   <main class="skyscraper">
-    <span>{{ elevatorsCalls }}</span>
     <section class="skyscraper__elevators">
-      <Elevator v-for="elevatorNumber in elevators"
-                :key="elevatorNumber"
-                :elevatorNumber="elevatorNumber"
-                :targetFloor="elevatorsCalls[elevatorNumber]"
-                @free-elevator="updateElevatorStatus(elevatorNumber, elevatorsCalls[elevatorNumber])"/>
+      <Elevator
+        v-for="elevatorNumber in elevators"
+        :key="elevatorNumber"
+        :elevatorNumber="elevatorNumber"
+        :targetFloor="elevatorsCalls[elevatorNumber]"
+        @free-elevator="
+          updateElevatorStatus(elevatorNumber, elevatorsCalls[elevatorNumber])
+        "
+      />
     </section>
     <section class="skyscraper__floors">
-      <Floor v-for="floor in floors"
-             :key="floor"
-             :floorNumber="floor"
-             @call-elevator="callElevator"/>
+      <Floor
+        v-for="floor in floors"
+        :key="floor"
+        :floorNumber="floor"
+        @call-elevator="callElevator"
+      />
     </section>
   </main>
 </template>
@@ -26,31 +30,36 @@ import {reactive} from "vue";
 import type {IElevatorStatus, IFloor} from "@/configurations/elevator";
 
 const floorsCount = 4;
-const elevatorsCount = 2;
+const elevatorsCount = 1;
 const elevators = [...Array(elevatorsCount).keys()];
 const floors = [...Array(floorsCount).keys()];
-
 
 const callElevator = (floor: number) => {
   elevatorCallQueue.enqueue(floor);
   elevatorScheduler();
-}
+};
 
 const updateElevatorStatus = (elevatorNumber: number, currentFloor: number) => {
   elevatorsStatuses[elevatorNumber].inWork = false;
-  console.log('work done');
+  console.log("work done");
   elevatorCallQueue.qu.delete(currentFloor);
   elevatorScheduler();
-}
+};
 
 const elevatorScheduler = () => {
-  console.log("START SCHEDULER")
-  for (let index = 0; index < elevatorsStatuses.length; ++index) {
-    if (!elevatorCallQueue.getLength()) {
-      console.log("EMPTY elevatorCallQueue")
+  console.log("START SCHEDULER");
+  const allElevatorsInWork = elevatorsStatuses.reduce(
+    (noFreeElevator: boolean, status) => noFreeElevator && status.inWork,
+    true
+  );
+  console.log("allElevatorsInWork", allElevatorsInWork);
+
+  for (let index = 0; index < elevatorsCount; ++index) {
+    if (!elevatorCallQueue.getLength() || allElevatorsInWork) {
+      console.log("EMPTY elevatorCallQueue || all in work");
       break;
     }
-    console.log("ggoone")
+    console.log("ggoone");
     if (!elevatorsStatuses[index].inWork) {
       console.log("set task to elevator");
       for (let floorCall of elevatorCallQueue.qu) {
@@ -62,17 +71,18 @@ const elevatorScheduler = () => {
       elevatorsStatuses[index].inWork = true;
     }
   }
-  console.log('TUUUT')
-}
+  console.log("TUUUT");
+};
 
-const elevatorCallQueue: Queue = reactive(new Queue());
+const elevatorCallQueue = reactive(new Queue<number>());
 
-const elevatorsCalls: IFloor[] =
-  reactive(new Array(elevatorsCount).fill(0 as IFloor));
+const elevatorsCalls: IFloor[] = reactive(
+  new Array(elevatorsCount).fill(0 as IFloor)
+);
 
-const elevatorsStatuses: IElevatorStatus[] =
-  reactive(new Array(elevatorsCount).fill({inWork: false} as IElevatorStatus));
-
+const elevatorsStatuses: IElevatorStatus[] = reactive(
+  new Array(elevatorsCount).fill({inWork: false} as IElevatorStatus)
+);
 </script>
 
 <style scoped lang="scss">
@@ -93,5 +103,4 @@ const elevatorsStatuses: IElevatorStatus[] =
     flex-direction: column-reverse;
   }
 }
-
 </style>

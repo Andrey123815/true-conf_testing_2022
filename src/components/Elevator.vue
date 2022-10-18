@@ -5,15 +5,21 @@
         <div class="cabin__floor-panel">
           <div class="floor-panel__move-directions">
             <IconArrowUp
-              :active="elevatorState !== DOOR_OPEN_STATE && targetFloor - currentFloor > 0"/>
+              :active="
+                elevatorState !== DOOR_OPEN_STATE &&
+                targetFloor - currentFloor > 0
+              "
+            />
             <IconArrowDown
-              :active="elevatorState !== DOOR_OPEN_STATE && targetFloor - currentFloor < 0"/>
+              :active="
+                elevatorState !== DOOR_OPEN_STATE &&
+                targetFloor - currentFloor < 0
+              "
+            />
           </div>
-          <span class="floor-panel__target-floor">01</span>
+          <span class="floor-panel__target-floor">{{ targetFloor }}</span>
         </div>
-        <span class="cabin__door-status">
-          OPEN
-        </span>
+        <span class="cabin__door-status"> OPEN </span>
         <div class="cabin__special-block">
           <button>Emergency</button>
           <button>targetFloor</button>
@@ -26,25 +32,38 @@
 <script setup lang="ts">
 import IconArrowUp from "@/components/icons/IconArrowUp.vue";
 import IconArrowDown from "@/components/icons/IconArrowDown.vue";
-import {onBeforeMount, onBeforeUnmount, onUpdated, reactive, ref, toRefs} from "vue";
+import {
+  onBeforeMount,
+  onBeforeUnmount,
+  onUpdated,
+  reactive,
+  ref,
+  toRefs,
+} from "vue";
 import type {IFloor, TElevatorState} from "@/configurations/elevator";
-import {DOOR_OPEN_STATE, FREE_STATE, WORK_STATE} from "@/configurations/elevator";
+import {
+  DOOR_OPEN_STATE,
+  FREE_STATE,
+  WORK_STATE,
+} from "@/configurations/elevator";
 import type {IAnimationStyle} from "@/configurations/animationStyles";
-import {defaultAnimationStyle, generateAnimation} from "@/configurations/animationStyles";
+import {
+  defaultAnimationStyle,
+  generateAnimation,
+} from "@/configurations/animationStyles";
 
 const EMPTY_TIMER: number = -1;
 
 interface Props {
-  elevatorNumber: number,
-  targetFloor: IFloor,
+  elevatorNumber: number;
+  targetFloor: IFloor;
 }
 
 const emit = defineEmits<{
-  (e: 'free-elevator', elevatorNumber: number, currentFloor: number): void
+  (e: "free-elevator", elevatorNumber: number, currentFloor: number): void;
 }>();
 
-
-const animation = (animationStyles) => {
+const animation = (animationStyles: IAnimationStyle) => {
   if (timerID.value !== EMPTY_TIMER) {
     return;
   }
@@ -62,14 +81,13 @@ const animation = (animationStyles) => {
 
     setTimeout(() => {
       elevatorState.value = FREE_STATE;
-      console.log("EMIIIT")
-      emit('free-elevator', elevatorNumber.value, currentFloor.value);
+      console.log("EMIIIT");
+      emit("free-elevator", elevatorNumber.value, currentFloor.value);
       clearTimeout(timerID.value);
       timerID.value = EMPTY_TIMER;
     }, 3000);
   }, Math.abs(floorDiff) * 1000);
-}
-
+};
 
 const props = defineProps<Props>();
 
@@ -122,7 +140,7 @@ onUpdated(() => animation(animationStyles));
   &__floor-panel {
     display: inline-block;
     border-radius: 5px;
-    background: #065F46;
+    background: #065f46;
   }
 
   &__door-status {

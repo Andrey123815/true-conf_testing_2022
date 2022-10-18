@@ -1,17 +1,19 @@
 <template>
   <div class="floor">
-    <span class="floor__number">{{floorNumber}}</span>
-    <button @click="emit('call-elevator', floorNumber)">Call the elevator</button>
+    <span class="floor__number">{{ floorNumber }}</span>
+    <button @click="emit('call-elevator', floorNumber)">
+      Call the elevator
+    </button>
   </div>
 </template>
 
 <script setup lang="ts">
 interface Props {
-  floorNumber: number
+  floorNumber: number;
 }
 
 const emit = defineEmits<{
-  (e: 'call-elevator', floor: number): void
+  (e: "call-elevator", floor: number): void;
 }>();
 
 const {floorNumber} = defineProps<Props>();
@@ -30,6 +32,7 @@ const {floorNumber} = defineProps<Props>();
   &:last-child {
     border-top: 1px solid gray;
   }
+
   &__number {
     text-align: center;
   }

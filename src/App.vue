@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import SkyScraper from "@/components/Skyscraper.vue";
+import SkyScraper from "@/components/SkyScraper.vue";
 </script>
 
 <template>
-  <SkyScraper />
+  <SkyScraper/>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
