@@ -1,7 +1,9 @@
-export interface IElevatorState {
+export interface IElevatorCall {
   target: number,
+}
+
+export interface IElevatorStatus {
   inWork: boolean,
-  currFloorBeforeStart: number,
 }
 
 export type TElevatorState = 'FREE' | 'WORK' | 'OPEN';
