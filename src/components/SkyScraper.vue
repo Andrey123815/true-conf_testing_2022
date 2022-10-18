@@ -41,7 +41,7 @@ const callElevator = (floor: number) => {
 
 const updateElevatorStatus = (elevatorNumber: number, currentFloor: number) => {
   elevatorsStatuses[elevatorNumber].inWork = false;
-  elevatorCallQueue.qu.delete(currentFloor);
+  elevatorCallQueue.dequeue(currentFloor);
   elevatorScheduler();
 };
 
